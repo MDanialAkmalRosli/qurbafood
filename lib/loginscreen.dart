@@ -3,6 +3,7 @@ import 'mainscreen.dart';
 import 'registrationscreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'userattr.dart';
 
@@ -83,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         MaterialButton(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
+                              borderRadius: BorderRadius.circular(0),
                             ),
                             minWidth: 100,
                             height: 50,
@@ -98,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 GestureDetector(
                   child: Text("No account? Register.",
-                      style: TextStyle(fontSize: 16)),
+                      style: TextStyle(fontSize: 16, color: Colors.blue[700])),
                   onTap: _registerNewUser,
                 ),
                 SizedBox(height: 7),
@@ -124,13 +125,19 @@ class _LoginScreenState extends State<LoginScreen> {
         body: {"email": _email, "password": _password}).then((response) {
       print(response.body);
       if (response.body == "failed") {
-        print("Login Failed...");
+        Fluttertoast.showToast(
+            msg: "Login failed",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0);
       } else {
         List userdata = response.body.split(",");
         User user = User(
             email: _email,
             password: _password,
-            datereg: userdata[1],
             );
         Navigator.push(context,
             MaterialPageRoute(builder: (content) => MainScreen(user: user)));
@@ -143,7 +150,14 @@ class _LoginScreenState extends State<LoginScreen> {
     String _password = _passwordController.text.toString();
 
     if (_email.isEmpty || _password.isEmpty) {
-      print("Email & password are empty!");
+      Fluttertoast.showToast(
+          msg: "Email & password are empty!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Color.fromRGBO(191, 30, 46, 50),
+          textColor: Colors.white,
+          fontSize: 16.0);      
       return;
     }
     setState(() {
@@ -201,9 +215,23 @@ class _LoginScreenState extends State<LoginScreen> {
         body: {"email": emailreset}).then((response) {
       print(response.body);
       if (response.body == "success") {
-        print("Check your email");
+        Fluttertoast.showToast(
+            msg: "Check ya email",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.amber,
+            textColor: Colors.black,
+            fontSize: 16.0);
       } else {
-        print("Failed");
+        Fluttertoast.showToast(
+            msg: "Failed...",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
       }
     });
   }
@@ -214,13 +242,27 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.setString("email", email);
       await prefs.setString("password", password);
       await prefs.setBool("rememberme", value);
-      print("Your preferences are stored");
+      Fluttertoast.showToast(
+          msg: "Preferences stored",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0);
       return;
     } else {
       await prefs.setString("email", '');
       await prefs.setString("password", '');
       await prefs.setBool("rememberme", value);
-      print("Your preferences are deleted");
+      Fluttertoast.showToast(
+          msg: "Your preferences are deleted",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0);
       setState(() {
         _emailController.text = "";
         _passwordController.text = "";
