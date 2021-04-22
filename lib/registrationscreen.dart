@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'loginscreen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class RegistrationScreen extends StatefulWidget {
@@ -80,7 +81,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         
                         MaterialButton(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
+                              borderRadius: BorderRadius.circular(0),
                             ),
                             minWidth: 100,
                             height: 50,
@@ -95,7 +96,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 GestureDetector(
                   child: Text("Have an account? Login.",
-                      style: TextStyle(fontSize: 16)),
+                      style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold)),
                   onTap: _loginUser,
                 ),
                 SizedBox(height: 7),
@@ -114,7 +115,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     String _password2 = _passwordController2.text.toString();
 
     if (_email.isEmpty || _password1.isEmpty || _password2.isEmpty) {
-      print("Email and password are empty!");
+      Fluttertoast.showToast(
+          msg: "Email & password are empty!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Color.fromRGBO(191, 30, 46, 50),
+          textColor: Colors.white,
+          fontSize: 16.0);
       return;
     }
 
@@ -151,10 +159,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       print(response.body);
 
       if(response.body == "SUCCESS"){
-        print("Registration success! Check your verification link.");
+        Fluttertoast.showToast(
+          msg: "Registration success! Check your email verification link!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0);
       }
       else{
-        print("Registration failed.");
+        Fluttertoast.showToast(
+          msg: "Registration failed.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0);
       }
 
     });
