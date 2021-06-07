@@ -4,7 +4,7 @@
     $email = $_POST['email'];
     $password = sha1($_POST['password']);
     
-    $sqllogin = "SELECT * FROM tbl_user WHERE user_email = '$email' AND password = '$password' AND otp = '0'";
+    $sqllogin = "SELECT * FROM tbl_user WHERE user_email = '$email' AND password = '$password' AND otp = '123'";
     $result = $conn->query($sqllogin);
     
     if ($result->num_rows > 0) {
