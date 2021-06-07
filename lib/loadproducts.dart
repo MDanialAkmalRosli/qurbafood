@@ -17,7 +17,7 @@ class LoadProducts extends StatefulWidget {
 class _LoadProductsState extends State<LoadProducts> {
   double screenHeight, screenWidth;
   List prodlist = [];
-  String itemcenter = "Loading...";
+  String itemcenter = " ";
   String title, prname;
   double totalprice = 0.0;
 
@@ -38,7 +38,7 @@ class _LoadProductsState extends State<LoadProducts> {
       title: 'Material App',
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Products List'),
+          title: Text('Cart List'),
           centerTitle: true,
           backgroundColor: Colors.green,
         ),
