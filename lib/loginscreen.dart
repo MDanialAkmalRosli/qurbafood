@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qurbafood/newproduct.dart';
 import 'mainscreen.dart';
 import 'registrationscreen.dart';
 import 'package:http/http.dart' as http;
@@ -140,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
             password: _password,
             );
         Navigator.push(context,
-            MaterialPageRoute(builder: (content) => MainScreen(user: user)));
+            MaterialPageRoute(builder: (content) => NewProduct(userattr: user)));
       }
     });
   }
