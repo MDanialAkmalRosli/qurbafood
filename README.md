@@ -1,6 +1,6 @@
 # qurbafood
 
-STIW2044 A202 Lab 2 task - Muhammad Danial Akmal b. Rosli (273046) 
+STIW2044 A202 Flutter Project - Muhammad Danial Akmal b. Rosli (273046) 
 
 ## Getting Started
 
