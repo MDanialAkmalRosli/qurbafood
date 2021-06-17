@@ -1,14 +1,14 @@
 import 'dart:convert';
-
-import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:qurbafood/checkoutscreen.dart';
 import 'package:qurbafood/userattr.dart';
 
 class LoadProducts extends StatefulWidget {
   final User userattr;
-
-  const LoadProducts({Key key, this.userattr}) : super(key: key);
+  final String email;
+  const LoadProducts({Key key, this.email, this.userattr}) : super(key: key);
 
   @override
   _LoadProductsState createState() => _LoadProductsState();
@@ -124,7 +124,7 @@ class _LoadProductsState extends State<LoadProducts> {
                   thickness: 3,
                 ),
                 Text(
-                  "TOTAL COST: " + totalprice.toStringAsFixed(2),
+                  "TOTAL COST: RM " + totalprice.toStringAsFixed(2),
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Divider(
@@ -134,10 +134,13 @@ class _LoadProductsState extends State<LoadProducts> {
                 MaterialButton(
                     minWidth: 100,
                     height: 30,
-                    child: Text("Make Payment",
+                    child: Text("Checkout",
                         style: TextStyle(color: Colors.white)),
-                    onPressed: () {},
-                    color: Colors.green),
+                    onPressed: () {
+                      Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CheckoutScreen(email: widget.userattr.email, total: totalprice,)));
+                    },
+                    color: Colors.blue[800]),
               ],
             ),
           ),
@@ -170,18 +173,21 @@ class _LoadProductsState extends State<LoadProducts> {
   }
 
   _searchProd(String text) {
+    String komen = "";
     http.post(
         Uri.parse("http://crimsonwebs.com/s273046/qurbafood/php/search_product.php"),
         body: {"email": widget.userattr.email,}).then((response) {
       if (response.body == "no data") {
-        itemcenter = "No items to display. Sorry.";
+        komen = "No items to display. Sorry.";
         return;
       } else {
         var jsondata = json.decode(response.body);
         prodlist = jsondata["products"];
+        komen = "There are items in the product list.";
 
         setState(() {});
       }
+      print(komen);
     });
   }
 
