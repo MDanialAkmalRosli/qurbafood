@@ -1,17 +1,16 @@
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:date_format/date_format.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ndialog/ndialog.dart';
-import 'package:qurbafood/paymentscreen.dart';
-// import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:qurbafood/delivery_class.dart';
+import 'package:qurbafood/paymentscreen.dart';
 import 'package:qurbafood/mappage.dart';
+import 'package:qurbafood/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final String email;
@@ -37,6 +36,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   String curtime = " ";
   String initial_time = "10:00";
   Position currentPosition;
+  SharedPreferences prefs;
+
+  get user => null;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = new DateTime.now();
+    curtime = DateFormat("Hm").format(now);
+    int cmin = convertMin(curtime);
+    initial_time = minToTime(cmin);
+    _loadPreferences();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +113,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   child: VerticalDivider(color: Colors.grey)),
                               Expanded(
                                 flex: 7,
-                                child: Text(widget.email.toString()),
+                                child: Text(widget.email),
                               )
                             ],
                           ),
@@ -190,7 +202,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               margin: EdgeInsets.all(3),
                               width: 300,
                               child: Text(
-                                  "Pickup time daily from 1000 hrs to 2000 hrs from our store. Allow us 15-30 minutes to prepare your order before pickup time."),
+                                  "Pickup time daily from 1000 hrs to 2000 hrs from our store. Allow us 20 minutes to prepare your order before pickup time."),
                             ),
                             SizedBox(height: 10),
                             Row(
@@ -347,11 +359,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               child: Text("Make a Payment",
                                   style: TextStyle(color: Colors.white)),
                               onPressed: () {
+                                /*
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (content) => PaymentScreen()));
-                                print("Pay now");
+                                print("Pay now");*/
+                                _makePayment();
                               },
                               color: Colors.deepOrange[500]),
                         ],
@@ -432,6 +446,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               backgroundColor: Colors.deepOrange[500],
               textColor: Colors.white,
               fontSize: 16.0);
+          initial_time = minToTime(ct);
+          setState(() {});
+          return;
         } else {
           Fluttertoast.showToast(
               msg: "Pickup time updated.",
@@ -444,6 +461,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         }
       });
     }
+  }
+
+  Future<void> _loadPreferences() async {
+    prefs = await SharedPreferences.getInstance();
+    name = prefs.getString("name") ?? 'Enter your name';
+    phno = prefs.getString("phone") ?? 'Enter your phone number';
+    setState(() {});
+  }
+
+  void setPickupExt() {
+    final now = new DateTime.now();
+    curtime = DateFormat("Hm").format(now);
+    int cm = convertMin(curtime);
+    initial_time = minToTime(cm);
+    setState(() {});
+  }
+
+  String minToTime(int min) {
+    var m = min + 20;
+    var d = Duration(minutes: m);
+    List<String> parts = d.toString().split(':');
+    String tm = '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
+    return DateFormat.jm().format(DateFormat("hh:mm").parse(tm));
+  }
+
+  int convertMin(String time) {
+    var val = time.split(":");
+    int h = int.parse(val[0]);
+    int m = int.parse(val[1]);
+    int to_min = (h * 60) + m;
+    return to_min;
   }
 
   void nameDialog() {
@@ -468,6 +516,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 onPressed: () async {
                   Navigator.of(context).pop();
                   name = _namecontroller.text;
+                  prefs = await SharedPreferences.getInstance();
+                  await prefs.setString("name", name);
                   setState(() {});
                 },
               ),
@@ -503,6 +553,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 onPressed: () async {
                   Navigator.of(context).pop();
                   phno = _phnocontroller.text;
+                  prefs = await SharedPreferences.getInstance();
+                  await prefs.setString("phone", phno);
                   setState(() {});
                 },
               ),
@@ -514,14 +566,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ],
           );
         });
-  }
-
-  int convertMin(String time) {
-    var val = time.split(":");
-    int h = int.parse(val[0]);
-    int m = int.parse(val[1]);
-    int to_min = (h * 60) + m;
-    return to_min;
   }
 
   _getUserLocation() async {
@@ -597,5 +641,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
+  }
+
+  void _makePayment() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Pay RM" + widget.total.toStringAsFixed(2) + "?",
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            actions: <Widget>[
+              TextButton(
+                child: Text("Proceed"),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  User2 _user = new User2(
+                      widget.email, phno, name, widget.total.toString());
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PaymentScreen(user: _user),
+                    ),
+                  );
+                },
+              ),
+              TextButton(
+                child: Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 }

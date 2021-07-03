@@ -143,6 +143,7 @@ class _NewProductState extends State<NewProduct> {
         Uri.parse(
             "http://crimsonwebs.com/s273046/qurbafood/php/new_product.php"),
         body: {
+          "email": widget.userattr.email,
           "prname": _prname,
           "prtype": _prtype,
           "prprice": _prprice,

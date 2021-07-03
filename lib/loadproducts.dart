@@ -17,7 +17,7 @@ class LoadProducts extends StatefulWidget {
 class _LoadProductsState extends State<LoadProducts> {
   double screenHeight, screenWidth;
   List prodlist = [];
-  String itemcenter = " ";
+  String itemcenter = "Loading...";
   String title, prname;
   double totalprice = 0.0;
 
@@ -27,6 +27,7 @@ class _LoadProductsState extends State<LoadProducts> {
   void initState() {
     super.initState();
     _loadProducts(_searchCtrl.text);
+    _searchProd(_searchCtrl.text);
   }
 
   @override
@@ -76,16 +77,7 @@ class _LoadProductsState extends State<LoadProducts> {
                                     padding: EdgeInsets.all(5),
                                     child: Card(
                                       child: Column(
-                                        children: [
-                                          /*
-                                          Container(
-                                            height: screenHeight / 4.5,
-                                            width: screenWidth / 1.0,
-                                            child: CachedNetworkImage(
-                                              imageUrl: "https://crimsonwebs.com/s273046/qurbafood/images/${prodlist[index]['prname']}.jpg",
-
-                                            ),
-                                          ), */
+                                        children: [                                      
                                           SizedBox(height: 10),
                                           Text(
                                             prodlist[index]['prname'],
@@ -172,21 +164,23 @@ class _LoadProductsState extends State<LoadProducts> {
     });
   }
 
-  _searchProd(String text) {
+  // belum selesai lagi
+  void _searchProd(String text) {
     String komen = "";
     http.post(
         Uri.parse("http://crimsonwebs.com/s273046/qurbafood/php/search_product.php"),
-        body: {"email": widget.userattr.email,}).then((response) {
+        body: {"prname": text,}).then((response) {
       if (response.body == "no data") {
-        komen = "No items to display. Sorry.";
+        itemcenter = "No items to display. Sorry.";
+        prodlist = [];
         return;
       } else {
         var jsondata = json.decode(response.body);
+        print(jsondata);
         prodlist = jsondata["products"];
         komen = "There are items in the product list.";
-
-        setState(() {});
       }
+      setState(() {});
       print(komen);
     });
   }
