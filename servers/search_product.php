@@ -3,14 +3,14 @@
 include_once("dbconnect.php");
 $prname = $_POST['prname'];
 
-if ($prname == "") {
-    $sqlloadproduct = "SELECT * FROM tbl_products ORDER BY prid DESC";
+if (isset($prname)) {
+    $searchitems = "SELECT * FROM tbl_products WHERE prname LIKE '%$prname%' ";
 } 
-else if ($prname == 'prname') {
-    $sqlloadproduct = "SELECT * FROM tbl_products WHERE prname LIKE '%$prname%'";
+else {
+    $searchitems = "SELECT * FROM tbl_products ORDER BY date_added DESC";
 }
 
-$result = $conn-> query($sqlloadproduct);
+$result = $conn-> query($searchitems);
 
 if($result->num_rows > 0){
     $response["products"] = array();
@@ -21,7 +21,7 @@ if($result->num_rows > 0){
         $prodlist[prtype] = $row['prtype'];
         $prodlist[prprice] = $row['prprice'];
         $prodlist[prqty] = $row['prqty'];
-        array_push($response["products"],$prodlist);
+        array_push($response["products"], $prodlist);
     }
     echo json_encode($response);
 }
